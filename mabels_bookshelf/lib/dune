@@ -1,2 +1,3 @@
 (library
- (name mabels_bookshelf))
+ (name mabels_bookshelf)
+ (libraries core))
