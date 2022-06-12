@@ -2,18 +2,7 @@ open Base
 
 type t
 
-type event = 
-    | Book_created
-    | Book_deleted
-    | Book_finished
-    | Book_started
-    | Book_quit
-    | Book_marked_as_wanted
-    | Read_to_page
-
-type validation_error =
-    | Invalid_page_number of string
-    | Invalid_book_information of string
+type event
 
 type book_info = 
 {
@@ -23,7 +12,7 @@ type book_info =
     owner_id : string;
 }
 
-val create : book_info -> (t, validation_error) Result.t 
+val create : book_info -> (t, Error.t) Result.t 
 
 val start_reading : t -> t
 
