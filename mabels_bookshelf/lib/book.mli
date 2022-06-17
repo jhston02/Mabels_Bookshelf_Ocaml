@@ -12,6 +12,8 @@ type book_info =
     owner_id : string;
 }
 
+val empty : t
+
 val create : book_info -> (t, Error.t) Result.t 
 
 val start_reading : t -> t
@@ -25,3 +27,9 @@ val read_to_page : t -> int -> t
 val want_to_read : t -> t
 
 val delete : t -> t
+
+val apply : t -> event -> t
+
+val get_events : t -> event list
+
+val clear_events : t -> t
