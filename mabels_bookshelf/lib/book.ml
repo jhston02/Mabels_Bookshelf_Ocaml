@@ -109,3 +109,30 @@ let finish_reading (aggregate:book_aggregate) =
   match book.status with
   | Dnf | Finished -> aggregate
   | _ -> when_event aggregate (Book_finished {id = book.id; owner_id = book.owner_id})
+
+let update_if_not_reading (aggregate:book_aggregate) =
+  match aggregate.book.status with
+  | Reading _ -> aggregate
+  | _ -> start_reading aggregate
+
+let read_to_page_impl page_number (aggregate:book_aggregate) =
+  let book = aggregate.book in
+  let page_number_t = Pages.create page_number in
+  match page_number_t with
+  | None -> aggregate
+  | Some page_number -> when_event aggregate (Read_to_page {id = book.id; owner_id = book.owner_id; page_number = page_number})
+
+let update_if_finished (aggregate:book_aggregate) =
+  match aggregate.book.status with
+  | Reading x -> 
+    if aggregate.book.total_pages = x then
+      finish_reading aggregate
+    else
+      aggregate
+  | _ -> aggregate
+
+let read_to_page (aggregate:book_aggregate) page_number = 
+  aggregate
+  |> update_if_not_reading
+  |> read_to_page_impl page_number
+  |> update_if_finished
