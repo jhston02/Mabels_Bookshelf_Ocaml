@@ -1,6 +1,7 @@
 open Base
 
 module Isbn = struct 
+
   type t = string
 
   let create isbn = 
@@ -136,3 +137,25 @@ let read_to_page (aggregate:book_aggregate) page_number =
   |> update_if_not_reading
   |> read_to_page_impl page_number
   |> update_if_finished
+
+let delete (aggregate:book_aggregate) = 
+  let book = aggregate.book in
+  match book.status with
+  | Deleted -> aggregate
+  | _ -> when_event aggregate (Book_deleted {id = book.id; owner_id = book.owner_id})
+
+let quit_reading (aggregate:book_aggregate) =
+  let book = aggregate.book in
+  match book.status with
+  | _ -> when_event aggregate (Book_quit {id = book.id; owner_id = book.owner_id})
+
+let want_to_read (aggregate:book_aggregate) = 
+  let book = aggregate.book in
+  match book.status with
+  | _ -> when_event aggregate (Book_marked_as_wanted {id = book.id; owner_id = book.owner_id})
+
+let get_events (aggregate:book_aggregate) = 
+  aggregate.events
+
+let clear_events  = 
+  fun (aggregate:book_aggregate) -> {aggregate with events = []}
